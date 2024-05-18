@@ -64,11 +64,14 @@
       })(window, document);
     </script>
     <link
-      href="/assets/small-web-icon.png"
+      href="{{ url_for('static',filename='small-web-icon.png') }}"
       rel="shortcut icon"
       type="image/x-icon"
     />
-    <link href="/assets/web-icon.png" rel="apple-touch-icon" />
+    <link
+      href="{{ url_for('static',filename='web-icon.png') }}"
+      rel="apple-touch-icon"
+    />
     <script type="text/javascript">
       window.__WEBFLOW_CURRENCY_SETTINGS = {
         currencyCode: 'USD',
@@ -109,8 +112,9 @@
                   aria-current="page"
                   class="nav-link w-nav-link w--current"
                   >Home</a
-                ><a href="html/shop.html" class="nav-link w-nav-link">Shop</a
-                ><a href="html/contact.html" class="nav-link w-nav-link"
+                ><a href="{{url_for('shop')}}" class="nav-link w-nav-link"
+                  >Shop</a
+                ><a href="{{url_for('contact')}}" class="nav-link w-nav-link"
                   >Contact</a
                 >
               </nav>
@@ -511,7 +515,7 @@
                                 >
                               </div>
                               <a
-                                href="/checkout"
+                                href="{{url_for('checkout')}}"
                                 value="Continue to Checkout"
                                 data-node-type="cart-checkout-button"
                                 class="w-commerce-commercecartcheckoutbutton btn"

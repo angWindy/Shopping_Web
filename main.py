@@ -4,18 +4,18 @@ import sqlite3
 app = Flask(__name__)
 
 # Hàm để kết nối cơ sở dữ liệu
-# def get_db():
-#     if 'db' not in g:
-#         g.db = sqlite3.connect('products.db')
-#         g.db.row_factory = sqlite3.Row
-#     return g.db
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect('products.db')
+        g.db.row_factory = sqlite3.Row
+    return g.db
 
 # Đóng kết nối cơ sở dữ liệu khi kết thúc request
-# @app.teardown_appcontext
-# def close_db(e=None):
-#     db = g.pop('db', None)
-#     if db is not None:
-#         db.close()
+@app.teardown_appcontext
+def close_db(e=None):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 # Route để hiển thị trang chủ
 @app.route("/")
@@ -26,10 +26,10 @@ def home():
 # Route để hiển thị danh sách sản phẩm
 @app.route("/shop")
 def shop():
-    # db = get_db()
+    db = get_db()
     # cursor = db.execute('SELECT id, name, price, category, image_url FROM products')
     # products = cursor.fetchall()
-    return render_template('shop.html')#, products=products)
+    return render_template('shop.html')
 
 # Route để hiển thị phần liên lạc (Contacts)
 @app.route("/contact")
