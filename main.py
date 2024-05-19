@@ -69,7 +69,14 @@ def category(category_name):
         product['url'] = '/shop/' + product['url']
         product['final_price'] = product['price'] * (1 - product['discount'] / 100)
 
-    return render_template('category.html', category_name=category_name, products_by_category=products_by_category)
+    # Tạo title hoàn chỉnh với tên trang web và tên danh mục
+    words = str(category_name).split('-')
+    # Chuyển đổi từng từ thành viết hoa chữ cái đầu tiên
+    words = [word.capitalize() for word in words]
+    title = ' '.join(words)
+    
+
+    return render_template('category.html', title = title, category_name=category_name, products_by_category=products_by_category)
 
 
 
