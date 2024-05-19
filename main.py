@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Hàm để kết nối cơ sở dữ liệu
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect('products.db')
+        g.db = sqlite3.connect('database/products.db')
         g.db.row_factory = sqlite3.Row
     return g.db
 
@@ -27,9 +27,16 @@ def home():
 @app.route("/shop")
 def shop():
     db = get_db()
-    # cursor = db.execute('SELECT id, name, price, category, image_url FROM products')
-    # products = cursor.fetchall()
-    return render_template('shop.html')
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
+    products = [dict(row) for row in cursor.fetchall()]
+    for product in products:
+        product['url'] = '/shop/' + product['url']
+        product['final_price'] = product['price'] * (1 - product['discount'] / 100)
+
+    # Tìm sản phẩm bán chạy nhất
+    best_selling_product = max(products, key=lambda x: x['bought']) if products else None
+
+    return render_template('shop.html', products=products, best_selling_product=best_selling_product)
 
 # Route để hiển thị phần liên lạc (Contacts)
 @app.route("/contact")
@@ -40,6 +47,10 @@ def contact():
 @app.route("/checkout")
 def checkout():
     return render_template('checkout.html')
+
+# Route để hiển thị danh sách sản phẩm theo danh mục
+# @app.route("/shop/")
+
 
 # Route để hiển thị chi tiết sản phẩm
 # @app.route('/shop/<int:product_id>')
