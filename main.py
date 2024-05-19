@@ -25,7 +25,7 @@ def home():
     cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     for product in products:
-        product['url'] = '/shop/' + product['url']
+        product['url'] = '/shop/products/' + product['url']
         product['final_price'] = product['price'] * (1 - product['discount'] / 100)
 
     # Chọn ra 3 sản phẩm tiêu biểu (Tùy chọn tiêu chí)
@@ -40,7 +40,7 @@ def shop():
     cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     for product in products:
-        product['url'] = '/shop/' + product['url']
+        product['url'] = '/shop/products/' + product['url']
         product['final_price'] = product['price'] * (1 - product['discount'] / 100)
 
     # Tìm sản phẩm bán chạy nhất
@@ -66,7 +66,7 @@ def category(category_name):
     cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
     products_by_category = [dict(row) for row in cursor.fetchall()]
     for product in products_by_category:
-        product['url'] = '/shop/' + product['url']
+        product['url'] = '/shop/products/' + product['url']
         product['final_price'] = product['price'] * (1 - product['discount'] / 100)
 
     # Tạo title hoàn chỉnh với tên trang web và tên danh mục
@@ -78,17 +78,20 @@ def category(category_name):
 
     return render_template('category.html', title = title, category_name=category_name, products_by_category=products_by_category)
 
-
-
 # Route để hiển thị chi tiết sản phẩm
-# @app.route('/shop/<int:product_id>')
-# def product_detail(product_id):
-#     db = get_db()
-#     cursor = db.execute('SELECT * FROM products WHERE id = ?', (product_id,))
-#     product = cursor.fetchone()
-#     if product is None:
-#         abort(404)
-#     return render_template('Shop/product-detail.html', product=product)
+@app.route('/shop/products/<product_name>')
+def product_detail(product_name):
+    db = get_db()
+    cursor = db.execute('SELECT * FROM products WHERE url = ?', (product_name,))
+    product = cursor.fetchone()
+    if product:
+        # Chuyển đổi đối tượng Row thành dictionary
+        product = dict(product)
+        # Tính giá sau khi giảm giá
+        product['final_price'] = product['price'] * (1 - product['discount'] / 100)
+    else:
+        abort(404)
+    return render_template('product-detail.html', product=product)
 
 if __name__ == '__main__':
     app.run(debug=True)

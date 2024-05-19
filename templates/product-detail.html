@@ -10,7 +10,7 @@
 >
   <head>
     <meta charset="utf-8" />
-    <title>Alone Wolf Sports</title>
+    <title>{{ product['name'] }}</title>
     <meta
       content="AWS is a store that meets all sports needs"
       name="description"
@@ -64,20 +64,22 @@
       })(window, document);
     </script>
     <link
-      href="/assets/small-web-icon.png"
+      href="{{ url_for('static',filename='small-web-icon.png') }}"
       rel="shortcut icon"
       type="image/x-icon"
     />
-    <link href="/assets/web-icon.png" rel="apple-touch-icon" />
+    <link
+      href="{{ url_for('static',filename='web-icon.png') }}"
+      rel="apple-touch-icon"
+    />
     <script type="text/javascript">
       window.__WEBFLOW_CURRENCY_SETTINGS = {
-        currencyCode: "USD",
-        symbol: "$",
-        decimal: ".",
+        currencyCode: 'USD',
+        symbol: '$',
+        decimal: '.',
         fractionDigits: 2,
-        group: ",",
-        template:
-          '{{wf {"path":"symbol","type":"PlainText"} }} {{wf {"path":"amount","type":"CommercePrice"} }} {{wf {"path":"currencyCode","type":"PlainText"} }}',
+        group: ',',
+        template: {% raw %}'{{wf {"path":"symbol","type":"PlainText"} }} {{wf {"path":"amount","type":"CommercePrice"} }} {{wf {"path":"currencyCode","type":"PlainText"} }}'{% endraw %},
         hideDecimalForWholeNumbers: false,
       };
     </script>
@@ -98,10 +100,7 @@
       >
         <div class="container">
           <div class="nav-wrapper">
-            <a
-              href="/template/index.html"
-              aria-current="page"
-              class="brand w-nav-brand w--current"
+            <a href="/" aria-current="page" class="brand w-nav-brand w--current"
               ><img
                 src="https://assets-global.website-files.com/6644881999e1e50c056f05bf/66459f7d40ed873ca266f40a_Logo%20AWS.png"
                 alt=""
@@ -109,13 +108,13 @@
             <div class="cart-nav-wrapper">
               <nav role="navigation" class="nav-menu w-nav-menu">
                 <a
-                  href="/template/index.html"
+                  href="/"
                   aria-current="page"
                   class="nav-link w-nav-link w--current"
                   >Home</a
-                ><a href="/template/shop.html" class="nav-link w-nav-link"
+                ><a href="{{url_for('shop')}}" class="nav-link w-nav-link"
                   >Shop</a
-                ><a href="/template/contact.html" class="nav-link w-nav-link"
+                ><a href="{{url_for('contact')}}" class="nav-link w-nav-link"
                   >Contact</a
                 >
               </nav>
@@ -516,7 +515,7 @@
                                 >
                               </div>
                               <a
-                                href="/checkout"
+                                href="{{url_for('checkout')}}"
                                 value="Continue to Checkout"
                                 data-node-type="cart-checkout-button"
                                 class="w-commerce-commercecartcheckoutbutton btn"
@@ -561,7 +560,7 @@
     </div>
     <div class="page-title-section">
       <div class="container">
-        <h1 class="page-title">Blue Canvas Pack</h1>
+        <h1 class="page-title">{{ product['name'] }}</h1>
       </div>
     </div>
     <div class="content-section">
@@ -569,15 +568,15 @@
         <div class="shopping-page-wrapper">
           <div class="shopping-page-left">
             <div
-              data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_main_image_4dr.url%22%2C%22to%22%3A%22style.background-image%22%7D%5D"
+              data-wf-sku-bindings=""
               style="
-                background-image: url('https://assets-global.website-files.com/6644881a99e1e50c056f0640/6644881a99e1e50c056f0669_denisse-leon-J7CjWufjmg4-unsplash.jpg');
+                background-image: url('{{ product['image_url']}}');
               "
               class="shopping-page-image"
             >
               <div
-                data-wf-sku-conditions="%7B%22condition%22%3A%7B%22fields%22%3A%7B%22default-sku%3Acompare-at-price%22%3A%7B%22exists%22%3A%22yes%22%2C%22type%22%3A%22CommercePrice%22%7D%7D%7D%2C%22timezone%22%3A%22America%2FChicago%22%7D"
-                class="pill-2 badge primary sale"
+                data-wf-sku-conditions=""
+                class="{% if product['discount'] > 0 %} pill-2 badge primary sale {% else %} pill-2 badge primary sale w-condition-invisible {% endif %}"
               >
                 Sale
               </div>
@@ -586,18 +585,15 @@
           <div class="shipping-page-right">
             <h2 class="page-product-headin">Blue Canvas Pack</h2>
             <div class="page-price-wrapping">
-              <div
-                data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D"
-                class="shop-item-price-page"
-              >
-                $ 95.00 USD
+              <div data-wf-sku-bindings="" class="shop-item-price-page">
+                $ {{ product['final_price'] }} USD
               </div>
               <div
-                data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_compare_at_price_7dr10dr%22%2C%22to%22%3A%22innerHTML%22%7D%5D"
-                data-wf-sku-conditions="%7B%22condition%22%3A%7B%22fields%22%3A%7B%22default-sku%3Acompare-at-price%22%3A%7B%22exists%22%3A%22yes%22%2C%22type%22%3A%22CommercePrice%22%7D%7D%7D%2C%22timezone%22%3A%22America%2FChicago%22%7D"
-                class="shop-item-price-page compare-at"
+                data-wf-sku-bindings=""
+                data-wf-sku-conditions=""
+                class="{% if product['discount'] > 0 %} shop-item-price-page compare-at {% else %} shop-item-price-page compare-at w-condition-invisible w-dyn-bind-empty {% endif %}"
               >
-                $ 145.00 USD
+                $ {{ product['price'] }} USD
               </div>
             </div>
             <div>
@@ -705,32 +701,7 @@
               ><img
                 src="https://assets-global.website-files.com/6644881999e1e50c056f05bf/6645cbdf04c1cff358e2c7c1_github_icon.png"
                 width="30"
-                alt="Twitter Logo"
-            /></a>
-            <a
-              href="https://twitter.com/webflow"
-              target="_blank"
-              class="social-footer-link w-inline-block"
-              ><img
-                src="https://assets-global.website-files.com/6644881999e1e50c056f05bf/6644881a99e1e50c056f066f_Twitter_Social_Icon_Rounded_Square_White.svg"
-                width="30"
-                alt="Twitter Logo" /></a
-            ><a
-              href="https://www.facebook.com/webflow"
-              class="social-footer-link w-inline-block"
-              ><img
-                src="https://assets-global.website-files.com/6644881999e1e50c056f05bf/6644881a99e1e50c056f0670_Facebook%20Logo.svg"
-                width="30"
-                alt="Facebook Logo"
-            /></a>
-            <a
-              href="https://www.instagram.com/webflow/"
-              target="_blank"
-              class="social-footer-link w-inline-block"
-              ><img
-                src="https://assets-global.website-files.com/6644881999e1e50c056f05bf/6644881a99e1e50c056f066e_Insta.svg"
-                width="30"
-                alt="Instagram Logo"
+                alt="Github Logo"
             /></a>
           </div>
         </div>
