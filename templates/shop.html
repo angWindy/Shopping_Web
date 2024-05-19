@@ -578,7 +578,9 @@
               >
                 <div class="pill-2 badge primary featured">Best Seller</div>
                 <div class="feature-text-wrapper">
-                  <h3 class="featured-item-name">{{ best_selling_product ['name'] }}</h3>
+                  <h3 class="featured-item-name">
+                    {{ best_selling_product ['name'] }}
+                  </h3>
                   <div
                     data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D"
                     class="featured-price"
@@ -685,7 +687,8 @@
                     </div>
                   </div>
                 </div>
-              {% endfor %}
+                {% endfor %}
+              </div>
             </div>
           </div>
         </div>

@@ -21,7 +21,17 @@ def close_db(e=None):
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    db = get_db()
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
+    products = [dict(row) for row in cursor.fetchall()]
+    for product in products:
+        product['url'] = '/shop/' + product['url']
+        product['final_price'] = product['price'] * (1 - product['discount'] / 100)
+
+    # Chọn ra 3 sản phẩm tiêu biểu (Tùy chọn tiêu chí)
+    top_priced_products = sorted(products, key=lambda x: x['final_price'], reverse=True)[:3]
+
+    return render_template("home.html", top_products = top_priced_products)
 
 # Route để hiển thị danh sách sản phẩm
 @app.route("/shop")
