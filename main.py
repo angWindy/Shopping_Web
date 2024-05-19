@@ -59,7 +59,18 @@ def checkout():
     return render_template('checkout.html')
 
 # Route để hiển thị danh sách sản phẩm theo danh mục
-# @app.route("/shop/")
+@app.route('/shop/<category_name>')
+def category(category_name):
+    db = get_db()
+
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
+    products_by_category = [dict(row) for row in cursor.fetchall()]
+    for product in products_by_category:
+        product['url'] = '/shop/' + product['url']
+        product['final_price'] = product['price'] * (1 - product['discount'] / 100)
+
+    return render_template('category.html', category_name=category_name, products_by_category=products_by_category)
+
 
 
 # Route để hiển thị chi tiết sản phẩm
