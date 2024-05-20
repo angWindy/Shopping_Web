@@ -602,34 +602,15 @@
             <h2 class="category-menu-heading">Shop by Category</h2>
             <div class="w-dyn-list">
               <div role="list" class="w-dyn-items">
+                {% for category in categories %}
                 <div role="listitem" class="category-menu-item w-dyn-item">
                   <a
-                    href="/shop/gift-cards"
+                    href="{{ category['category_url'] }}"
                     class="btn dark outline cat-menu w-button"
-                    >Gift Cards</a
+                    >{{ category['category'] }}</a
                   >
                 </div>
-                <div role="listitem" class="category-menu-item w-dyn-item">
-                  <a
-                    href="/shop/tents"
-                    class="btn dark outline cat-menu w-button"
-                    >Tents</a
-                  >
-                </div>
-                <div role="listitem" class="category-menu-item w-dyn-item">
-                  <a
-                    href="/shop/accessories"
-                    class="btn dark outline cat-menu w-button"
-                    >Accessories</a
-                  >
-                </div>
-                <div role="listitem" class="category-menu-item w-dyn-item">
-                  <a
-                    href="/shop/packs"
-                    class="btn dark outline cat-menu w-button"
-                    >Packs</a
-                  >
-                </div>
+                {% endfor %}
               </div>
             </div>
           </div>
