@@ -15,10 +15,63 @@ def convert_url_to_name(url):
     name = ' '.join(words)
     return name
 
+def get_navbar_information():
+    # Mở kết nối đến cơ sở dữ liệu SQLite
+    conn = sqlite3.connect('Database/database.db')
+    conn.row_factory = sqlite3.Row  # Thiết lập row_factory để trả về từ điển thay vì tuple
+    cursor = conn.cursor()
+    
+    # Lấy thông tin user_id từ bảng users (đây là một ví dụ, bạn cần điều chỉnh cho phù hợp với cấu trúc của cơ sở dữ liệu của bạn)
+    # cursor.execute("SELECT user_id FROM users WHERE ...")
+    # user_id = cursor.fetchone()[0]  # Giả sử user_id là cột đầu tiên trong kết quả
+
+    if False: ## Chưa đăng nhập
+        user_id = 0
+    else:
+        user_id = 0
+
+    # Truy vấn để lấy thông tin giỏ hàng dựa trên user_id
+    cursor.execute("SELECT * FROM Cart WHERE user_id IS ? OR user_id = ?", (user_id, user_id))
+    cart = cursor.fetchone()
+
+    total_quantity = 0
+    total_amount = 0
+
+    # Lấy thông tin về các mặt hàng trong giỏ hàng dựa vào cart['id']
+    if cart:
+        # Nếu có giỏ hàng tương ứng, truy vấn để lấy thông tin chi tiết của các mặt hàng trong giỏ hàng dựa trên cart_id và product_id
+        cursor.execute("""
+            SELECT products.*, CartItems.quantity
+            FROM CartItems
+            INNER JOIN Products ON CartItems.product_id = products.id
+            WHERE CartItems.cart_id = ?
+        """, (cart['id'],))
+        cart_items = [dict(row) for row in cursor.fetchall()]
+
+        # Tính tổng số lượng hàng và tổng số tiền
+        for item in cart_items:
+            total_quantity += item['quantity']
+            total_amount += item['quantity'] * item['price']
+
+        # Cập nhật giá trị total_quantity và total_amount vào bảng Cart
+        cursor.execute("""
+            UPDATE cart
+            SET total_quantity = ?,
+                total_amount = ?
+            WHERE id = ?
+        """, (total_quantity, total_amount, cart['id']))
+        conn.commit()
+
+    # Đóng kết nối đến cơ sở dữ liệu
+    conn.close()
+
+    # Trả về thông tin đã thu thập được
+    return user_id, cart, cart_items
+
 # Hàm để kết nối cơ sở dữ liệu
-def get_product_db():
+def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect('database/products.db')
+        g.db = sqlite3.connect('database/database.db')
         g.db.row_factory = sqlite3.Row
     return g.db
 
@@ -33,8 +86,8 @@ def close_db(e=None):
 @app.route("/")
 @app.route("/home")
 def home():
-    db = get_product_db()
-    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
+    db = get_db()
+    cursor = db.execute('SELECT * FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     for product in products:
         product['url'] = '/shop/products/' + product['url']
@@ -43,13 +96,15 @@ def home():
     # Chọn ra 3 sản phẩm tiêu biểu (Tùy chọn tiêu chí)
     top_priced_products = sorted(products, key=lambda x: x['final_price'], reverse=True)[:3]
 
-    return render_template("home.html", top_products = top_priced_products)
+    user_id, cart, cart_items = get_navbar_information()
 
-# Route để hiển thị danh sách sản phẩm
+    return render_template("home.html", user_id = user_id, cart = cart, cart_items = cart_items, top_products = top_priced_products)
+
+# Route để hiển thị danh sách sản phẩms
 @app.route("/shop")
 def shop():
-    db = get_product_db()
-    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
+    db = get_db()
+    cursor = db.execute('SELECT * FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     categories = db.execute('SELECT DISTINCT category FROM products').fetchall()
     
@@ -78,9 +133,9 @@ def checkout():
 # Route để hiển thị danh sách sản phẩm theo danh mục
 @app.route('/shop/<category_name>')
 def category(category_name):
-    db = get_product_db()
+    db = get_db()
 
-    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
+    cursor = db.execute('SELECT * FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
     categories = db.execute('SELECT DISTINCT category FROM products').fetchall()
     
     products_by_category = [dict(row) for row in cursor.fetchall()]
@@ -99,7 +154,7 @@ def category(category_name):
 # Route để hiển thị chi tiết sản phẩm
 @app.route('/shop/products/<product_name>')
 def product_detail(product_name):
-    db = get_product_db()
+    db = get_db()
     cursor = db.execute('SELECT * FROM products WHERE url = ?', (product_name,))
     product = cursor.fetchone()
     if product:

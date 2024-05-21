@@ -134,129 +134,7 @@
                   data-node-type="commerce-cart-wrapper"
                   data-open-product=""
                   data-wf-cart-type="rightSidebar"
-                  data-wf-cart-query="query Dynamo2 {
-  database {
-    id
-    commerceOrder {
-      comment
-      extraItems {
-        name
-        pluginId
-        pluginName
-        price {
-          value
-          unit
-          decimalValue
-          string
-        }
-      }
-      id
-      startedOn
-      statusFlags {
-        hasDownloads
-        hasSubscription
-        isFreeOrder
-        requiresShipping
-      }
-      subtotal {
-        value
-        unit
-        decimalValue
-        string
-      }
-      total {
-        value
-        unit
-        decimalValue
-        string
-      }
-      updatedOn
-      userItems {
-        count
-        id
-        product {
-          id
-          cmsLocaleId
-          f__draft_0ht
-          f__archived_0ht
-          f_name_
-          f_sku_properties_3dr {
-            id
-            name
-            enum {
-              id
-              name
-              slug
-            }
-          }
-        }
-        rowTotal {
-          value
-          unit
-          decimalValue
-          string
-        }
-        sku {
-          cmsLocaleId
-          f__draft_0ht
-          f__archived_0ht
-          f_main_image_4dr {
-            url
-            file {
-              size
-              origFileName
-              createdOn
-              updatedOn
-              mimeType
-              width
-              height
-              variants {
-                origFileName
-                quality
-                height
-                width
-                s3Url
-                error
-                size
-              }
-            }
-            alt
-          }
-          f_price_ {
-            value
-            unit
-            decimalValue
-            string
-          }
-          f_sku_values_3dr {
-            property {
-              id
-            }
-            value {
-              id
-            }
-          }
-          id
-        }
-        subscriptionFrequency
-        subscriptionInterval
-        subscriptionTrial
-      }
-      userItemsCount
-    }
-  }
-  site {
-    id
-    commerce {
-      businessAddress {
-        country
-      }
-      defaultCountry
-      defaultCurrency
-      quickCheckoutEnabled
-    }
-  }
-}"
+                  data-wf-cart-query=""
                   data-wf-page-link-href-prefix=""
                   class="w-commerce-commercecartwrapper cart-menu"
                 >
@@ -273,10 +151,10 @@
                       class="cart-icon"
                     />
                     <div
-                      data-wf-bindings="%5B%7B%22innerHTML%22%3A%7B%22type%22%3A%22Number%22%2C%22filter%22%3A%7B%22type%22%3A%22numberPrecision%22%2C%22params%22%3A%5B%220%22%2C%22numberPrecision%22%5D%7D%2C%22dataPath%22%3A%22database.commerceOrder.userItemsCount%22%7D%7D%5D"
+                      data-wf-bindings=""
                       class="w-commerce-commercecartopenlinkcount cart-quantity-cart"
                     >
-                      0
+                      {{ cart['total_quantity'] }}
                     </div></a
                   >
                   <div
