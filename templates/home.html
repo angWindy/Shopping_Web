@@ -201,12 +201,12 @@
                           <script
                             type="text/javascript"
                             id="wf-template-d0872620-da83-2e6a-1190-a6df4dad026e"
-                            src = "{{ url_for('static', filename = 'update.js') }}"
+                            src="{{ url_for('static', filename = 'updates.js') }}"
                           >
                           </script>
                           <div
                             class="w-commerce-commercecartlist"
-                            data-wf-collection="database.commerceOrder.userItems"
+                            data-wf-collection=""
                             data-wf-template-id="wf-template-d0872620-da83-2e6a-1190-a6df4dad026e"
                           >
                             {% for item in cart_items %}
@@ -232,7 +232,7 @@
                                 <ul
                                   data-wf-bindings=""
                                   class="w-commerce-commercecartoptionlist"
-                                  data-wf-collection="database.commerceOrder.userItems%5B%5D.product.f_sku_properties_3dr"
+                                  data-wf-collection=""
                                   data-wf-template-id="wf-template-d0872620-da83-2e6a-1190-a6df4dad0274"
                                 >
                                 </ul>
@@ -259,7 +259,7 @@
                                 autocomplete="off"
                                 data-wf-cart-action="update-item-quantity"
                                 data-commerce-sku-id="{{ item['product_id']}}"
-                                value={{ item['quantity'] }}
+                                value="{{ item['quantity'] }}"
                                 onchange="updateQuantity(this)"
                               />
                             </div>

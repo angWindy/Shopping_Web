@@ -87,7 +87,7 @@ def close_db(e=None):
 @app.route("/home")
 def home():
     db = get_db()
-    cursor = db.execute('SELECT * FROM products')
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     for product in products:
         product['url'] = '/shop/products/' + product['url']
@@ -100,11 +100,11 @@ def home():
 
     return render_template("home.html", user_id = user_id, cart = cart, cart_items = cart_items, top_products = top_priced_products)
 
-# Route để hiển thị danh sách sản phẩms
+# Route để hiển thị danh sách sản phẩm
 @app.route("/shop")
 def shop():
     db = get_db()
-    cursor = db.execute('SELECT * FROM products')
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products')
     products = [dict(row) for row in cursor.fetchall()]
     categories = db.execute('SELECT DISTINCT category FROM products').fetchall()
     
@@ -135,7 +135,7 @@ def checkout():
 def category(category_name):
     db = get_db()
 
-    cursor = db.execute('SELECT * FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
+    cursor = db.execute('SELECT id, name, url, price, discount, category, bought, image_url FROM products WHERE LOWER(REPLACE(category, " ", "-")) = ?', (category_name,))
     categories = db.execute('SELECT DISTINCT category FROM products').fetchall()
     
     products_by_category = [dict(row) for row in cursor.fetchall()]
@@ -177,18 +177,46 @@ def update_quantity():
         conn = sqlite3.connect('Database/database.db')
         cursor = conn.cursor()
         
+        # Kiểm tra tồn tại của sản phẩm trong giỏ hàng
+        cursor.execute('SELECT * FROM CartItems WHERE product_id = ?', (product_id,))
+        cart_item = cursor.fetchone()
+
+        if not cart_item:
+            conn.close()
+            return jsonify({'status': 'error', 'message': 'No record found for product_id'}), 404
+        
+        # Cập nhật số lượng sản phẩm
         cursor.execute('''
             UPDATE CartItems
             SET quantity = ?
             WHERE product_id = ?
         ''', (quantity, product_id))
+
+        # Cập nhật lại tổng số lượng và tổng số tiền trong giỏ hàng
+        cursor.execute('''
+            UPDATE Cart
+            SET total_quantity = (
+                SELECT SUM(quantity)
+                FROM CartItems
+                WHERE cart_id = Cart.id
+            ),
+            total_amount = (
+                SELECT SUM(quantity * price)
+                FROM CartItems
+                JOIN Products ON CartItems.product_id = Products.id
+                WHERE CartItems.cart_id = Cart.id
+            )
+            WHERE id = (SELECT cart_id FROM CartItems WHERE product_id = ?)
+        ''', (product_id,))
         
+        print("Cart quantity updated")
         conn.commit()
         conn.close()
 
-        print("Cart quantity updated")
+        
         return jsonify({'status': 'success'})
     except Exception as e:
+        print(f"Error: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 

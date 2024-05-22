@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS CartItems (
 
 ################################################################################################################
 
-# # Thêm một vài sản phẩm mẫu
+# # # Thêm một vài sản phẩm mẫu
 # cursor.execute("INSERT INTO Products (name, url, category, description, price, discount, bought, inventory, image_url) VALUES ('Gift Card', 'gift-card', 'Gift Cards', 'Description of Product 1', 25.99, 0.0, 10, 100, 'https://assets-global.website-files.com/6644881a99e1e50c056f0640/6644881a99e1e50c056f06b4_acme-gift-card.jpg')")
 # cursor.execute("INSERT INTO Products (name, url, category, description, price, discount, bought, inventory, image_url) VALUES ('Tin Coffee Tumbler', 'tin-coffee-tumbler', 'Accessories', 'Description of Product 2', 35.99, 0.0, 20, 200, 'https://assets-global.website-files.com/6644881a99e1e50c056f0640/6644881a99e1e50c056f067d_ryan-holloway-JyDmUaXMib4-unsplash.jpg')")
 # cursor.execute("INSERT INTO Products (name, url, category, description, price, discount, bought, inventory, image_url) VALUES ('Blue Canvas Pack', 'blue-canvas-pack' ,'Packs', 'Description of Product 3', 95.00, 50.0, 30, 300, 'https://assets-global.website-files.com/6644881a99e1e50c056f0640/6644881a99e1e50c056f0669_denisse-leon-J7CjWufjmg4-unsplash.jpg')")
@@ -67,19 +67,19 @@ CREATE TABLE IF NOT EXISTS CartItems (
 cursor.execute('SELECT id FROM Cart WHERE user_id = 0')
 existing_cart = cursor.fetchone()
 
-# # Nếu không có giỏ hàng nào với user_id là 0, tạo một giỏ hàng mới với user_id là 0
+# Nếu không có giỏ hàng nào với user_id là 0, tạo một giỏ hàng mới với user_id là 0
 if not existing_cart:
     cursor.execute('''
         INSERT INTO Cart (user_id, total_quantity, total_amount)
         VALUES (?, 0, 0)
     ''', (0,))
-    conn.commit()  # Chắc chắn lưu thay đổi vào cơ sở dữ liệu
+    conn.commit()  # Lưu thay đổi vào cơ sở dữ liệu
 
     # Lấy cart_id của giỏ hàng mới được tạo
     cart_id = cursor.lastrowid
 else:
     # Nếu có giỏ hàng với user_id là 0, sử dụng giỏ hàng đó
-    cart_id = existing_cart['id']
+    cart_id = existing_cart[0]  # existing_cart là một tuple, sử dụng chỉ mục 0 để lấy id
 
 # Thêm các mục vào giỏ hàng
 def get_product_price(product_id):
