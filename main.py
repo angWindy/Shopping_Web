@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, abort
+from flask import Flask, render_template, g, abort, request, jsonify
 import sqlite3
 
 app = Flask(__name__)
@@ -165,6 +165,32 @@ def product_detail(product_name):
     else:
         abort(404)
     return render_template('product-detail.html', product=product)
+
+# Route update cart_quantity
+@app.route('/update-quantity', methods=['POST'])
+def update_quantity():
+    data = request.get_json()
+    product_id = data['product_id']
+    quantity = data['quantity']
+
+    try:
+        conn = sqlite3.connect('Database/database.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE CartItems
+            SET quantity = ?
+            WHERE product_id = ?
+        ''', (quantity, product_id))
+        
+        conn.commit()
+        conn.close()
+
+        print("Cart quantity updated")
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
