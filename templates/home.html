@@ -2,10 +2,6 @@
 <!-- This site was created in Webflow. https://www.webflow.com -->
 <!-- Last Published: Fri May 17 2024 12:18:03 GMT+0000 (Coordinated Universal Time) -->
 <html
-  data-wf-domain="shopping-web-by-him-7092b1.webflow.io"
-  data-wf-page="6644881a99e1e50c056f0622"
-  data-wf-site="6644881999e1e50c056f05bf"
-  data-wf-status="1"
   lang="en"
 
   <head>
@@ -38,7 +34,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content="Webflow" name="generator" />
     <link
-      href="https://assets-global.website-files.com/6644881999e1e50c056f05bf/css/shopping-web-by-him-7092b1.webflow.e5c18b077.css"
+      href=" {{ url_for('static', filename='style.css') }}"
       rel="stylesheet"
       type="text/css"
     />
@@ -70,25 +66,15 @@
       })(window, document);
     </script>
     <link
-      href="{{ url_for('static',filename='small-web-icon.png') }}"
+      href="{{ url_for('static',filename='images/small-web-icon.png') }}"
       rel="shortcut icon"
       type="image/x-icon"
     />
     <link
-      href="{{ url_for('static',filename='web-icon.png') }}"
+      href="{{ url_for('static',filename='images/web-icon.png') }}"
       rel="apple-touch-icon"
     />
-    <script type="text/javascript">
-      window.__WEBFLOW_CURRENCY_SETTINGS = {
-        currencyCode: 'USD',  
-        symbol: '$',
-        decimal: '.',
-        fractionDigits: 2,
-        group: ',',
-        template: {% raw %}'{{wf {"path":"symbol","type":"PlainText"} }} {{wf {"path":"amount","type":"CommercePrice"} }} {{wf {"path":"currencyCode","type":"PlainText"} }}'{% endraw %},
-        hideDecimalForWholeNumbers: false,
-      };
-    </script>
+    
   </head>
 
   <body>
@@ -201,7 +187,6 @@
                           <script
                             type="text/javascript"
                             id="wf-template-d0872620-da83-2e6a-1190-a6df4dad026e"
-                            src="{{ url_for('static', filename = 'updates.js') }}"
                           >
                           </script>
                           <div
@@ -241,7 +226,7 @@
                                   role=""
                                   data-wf-bindings=""
                                   class="w-inline-block"
-                                  data-wf-cart-action="remove-item"
+                                  data-wf-cart-action=""
                                   data-commerce-sku-id=""
                                   aria-label="Remove item from cart"
                                 >
@@ -255,14 +240,18 @@
                                 pattern="^[0-9]+$"
                                 inputmode="numeric"
                                 type="number"
+                                min="0"
+                                step="1"
                                 name="quantity"
                                 autocomplete="off"
-                                data-wf-cart-action="update-item-quantity"
-                                data-commerce-sku-id="{{ item['product_id']}}"
+                                data-wf-cart-action=""
+                                data-commerce-sku-id=""
+                                data-cart-id="{{ cart['id'] }}"
+                                data-product-id="{{ item['id'] }}"
                                 value="{{ item['quantity'] }}"
-                                onchange="updateQuantity(this)"
+                                onchange="updateCartItemsInCart(this)"
                               />
-                            </div>
+                            </div>  
                             {% endfor %}
                           </div>
                           <div class="w-commerce-commercecartfooter">
@@ -615,6 +604,7 @@
         </div>
       </div>
     </div>
+    <script src="{{ url_for('static', filename='update.js') }}"></script>
     <script
       src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6644881999e1e50c056f05bf"
       type="text/javascript"

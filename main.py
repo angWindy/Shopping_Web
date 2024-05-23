@@ -75,6 +75,11 @@ def get_db():
         g.db.row_factory = sqlite3.Row
     return g.db
 
+def get_db_connection():
+    conn = sqlite3.connect('database/database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
 # Đóng kết nối cơ sở dữ liệu khi kết thúc request
 @app.teardown_appcontext
 def close_db(e=None):
@@ -166,59 +171,30 @@ def product_detail(product_name):
         abort(404)
     return render_template('product-detail.html', product=product)
 
-# Route update cart_quantity
-@app.route('/update-quantity', methods=['POST'])
-def update_quantity():
+@app.route('/update-cart-items-in-cart', methods=['POST'])
+def update_cart_items_in_cart():
     data = request.get_json()
-    product_id = data['product_id']
-    quantity = data['quantity']
+    product_id = data.get('product_id')
+    new_quantity = data.get('quantity')
+    cart_id = data.get('cart_id')
 
+    if not product_id or not cart_id or not new_quantity:
+        return jsonify({'success': False, 'message': 'Invalid data'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
     try:
-        conn = sqlite3.connect('Database/database.db')
-        cursor = conn.cursor()
-        
-        # Kiểm tra tồn tại của sản phẩm trong giỏ hàng
-        cursor.execute('SELECT * FROM CartItems WHERE product_id = ?', (product_id,))
-        cart_item = cursor.fetchone()
-
-        if not cart_item:
-            conn.close()
-            return jsonify({'status': 'error', 'message': 'No record found for product_id'}), 404
-        
-        # Cập nhật số lượng sản phẩm
         cursor.execute('''
             UPDATE CartItems
             SET quantity = ?
-            WHERE product_id = ?
-        ''', (quantity, product_id))
-
-        # Cập nhật lại tổng số lượng và tổng số tiền trong giỏ hàng
-        cursor.execute('''
-            UPDATE Cart
-            SET total_quantity = (
-                SELECT SUM(quantity)
-                FROM CartItems
-                WHERE cart_id = Cart.id
-            ),
-            total_amount = (
-                SELECT SUM(quantity * price)
-                FROM CartItems
-                JOIN Products ON CartItems.product_id = Products.id
-                WHERE CartItems.cart_id = Cart.id
-            )
-            WHERE id = (SELECT cart_id FROM CartItems WHERE product_id = ?)
-        ''', (product_id,))
-        
-        print("Cart quantity updated")
+            WHERE product_id = ? AND cart_id = ?
+        ''', (new_quantity, product_id, cart_id))
         conn.commit()
+        return jsonify({'success': True}), 200
+    except sqlite3.Error as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
         conn.close()
-
-        
-        return jsonify({'status': 'success'})
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
